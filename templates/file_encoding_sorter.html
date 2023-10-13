@@ -69,13 +69,12 @@
     </div>
     <div class="sc-16z3mvs-0 kbLfHX" style="display: none;"></div>
 
-    <div class="mytextlogfile">
+    <div class="mytextlogfile" id="log">
     {% for message in messages %}
         <div class="log-entry">{{ message }}</div>
     {% endfor %}
 </div>
-
-<div id="message"></div>
+    
 
 <!-- Ваш код для кнопки "Start sorting" -->
 <a class="iksweb" href="#" title="Start sorting" id="start-sorting">Start sorting</a>
@@ -89,11 +88,12 @@
         socket.emit('run_script');
     });
 
-    socket.on('script_result', function (message) {
-    var downloadLink = '/path/to/download/' + message;  // Замените на реальный путь к файлу
-    var downloadMessage = 'ファイルが並べ替えられました<br><a href="' + downloadLink + '">このリンクからダウンロードできます</a>';
-    document.getElementById('mytextlogfile').innerHTML = downloadMessage;
+    socket.on('script_result', function(msg) {
+    document.getElementById('log').innerHTML += '<div class="log-entry">' + msg + '</div>';
 });
+
+
+
 </script>
 
 
