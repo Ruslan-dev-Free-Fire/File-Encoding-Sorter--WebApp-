@@ -23,9 +23,25 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
 
 
-@app.route('/path/to/download/<filename>')
-def download_file(filename):
-    return send_from_directory(os.path.join(os.getcwd(), "Ready"), filename, as_attachment=True)
+@app.route('/download')
+def download_file():
+    return send_from_directory('Ready', 'Completed_files.zip')
+
+
+@app.route('/sort_files', methods=['GET', 'POST'])
+def sort_files():
+    if request.method == 'POST':
+        # Your current code for handling POST requests
+        pass
+    else:
+        # Processing GET requests
+        try:
+            subprocess.run(['python', 'C:\\MyCode\\Python\\Ruslan-dev-Free-Fire_Site\\file_sorter.py'], check=True)
+            # Return the URL of the created archive
+            return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
+        except subprocess.CalledProcessError as e:
+            return f'Error during sorting: {e}'
+
 
 
 @app.route('/')
@@ -65,9 +81,12 @@ def file_encoding_sorter():
 def run_script():
     try:
         subprocess.call(['python', 'file_sorter.py'])  # Замените 'file_sorter.py' на путь к вашему скрипту
-        socketio.emit('script_result', 'Sorting completed successfully.')
+        download_link = url_for('download_file')
+        result_message = 'Sorting completed successfully. Download the sorted files <a href="{}">here</a>.'.format(download_link)
+        socketio.emit('script_result', result_message)
     except Exception as e:
         socketio.emit('script_result', f'Error during sorting: {e}')
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
