@@ -21,6 +21,15 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
 
 
+@app.route('/sort_files', methods=['POST'])
+def sort_files():
+    try:
+        subprocess.run(['python', 'file_sorter.py'], check=True)
+        return 'Sorting completed successfully.'
+    except subprocess.CalledProcessError as e:
+        return f'Error during sorting: {e}'
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
