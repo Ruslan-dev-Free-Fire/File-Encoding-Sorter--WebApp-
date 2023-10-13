@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
+from flask_socketio import SocketIO
 import os
 import subprocess
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_secret_key_here'  # Замените 'your_secret_key_here' на секретный ключ
+
 
 # Указываем папку для загрузки файлов
 UPLOAD_FOLDER = 'uploads'
@@ -12,34 +15,15 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Максимальный размер загружаемых файлов (в байтах)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Например, 16 MB
 
-# Секретный ключ для безопасности (для flash-сообщений)
-app.secret_key = 'your_secret_key_here'
-
+socketio = SocketIO(app)
 
 # Функция для проверки разрешенных расширений файлов
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
 
-
-@app.route('/sort_files', methods=['POST'])
-def sort_files():
-    try:
-        subprocess.run(['python', 'file_sorter.py'], check=True)
-        return 'Sorting completed successfully.'
-    except subprocess.CalledProcessError as e:
-        return f'Error during sorting: {e}'
-
-
 @app.route('/')
 def home():
     return render_template('index.html')
-
-
-@app.route('/start_script')
-def start_script():
-    subprocess.call(['python', 'your_script.py'])
-    return 'Script started'
-
 
 @app.route('/file_encoding_sorter', methods=['GET', 'POST'])
 def file_encoding_sorter():
@@ -70,6 +54,13 @@ def file_encoding_sorter():
 
     return render_template('file_encoding_sorter.html')
 
+@socketio.on('run_script')
+def run_script():
+    try:
+        subprocess.call(['python', 'file_sorter.py'])  # Замените 'file_sorter.py' на путь к вашему скрипту
+        socketio.emit('script_result', 'Sorting completed successfully.')
+    except Exception as e:
+        socketio.emit('script_result', f'Error during sorting: {e}')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

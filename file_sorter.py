@@ -1,6 +1,24 @@
 import os
 import shutil
+import sys
+
 from chardet.universaldetector import UniversalDetector
+import logging
+
+print(sys.version)
+
+# Настройка базового конфига
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
+# Создание логгера
+logger = logging.getLogger('my_logger')
+
+# Запись сообщений разного уровня
+logger.debug('Сообщение для дебагинга')
+logger.info('Информационное сообщение')
+logger.warning('Предупреждение')
+logger.error('Сообщение об ошибке')
+logger.critical('Критическая ошибка')
 
 # Путь к папке с файлами
 folder_path = "uploads"  # Путь к папке с загруженными файлами

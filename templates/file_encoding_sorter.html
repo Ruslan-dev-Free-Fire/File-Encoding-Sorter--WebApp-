@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>File Encoding Sorter</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='FileEncodingSorter/style.css') }}">
 </head>
@@ -75,13 +76,45 @@
     {% endfor %}
 </div>
 
+<div id="message"></div>
 
+<!-- Ваш код для кнопки "Start sorting" -->
+<a class="iksweb" href="#" title="Start sorting" id="start-sorting">Start sorting</a>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+<script type="text/javascript">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+    $('#start-sorting').on('click', function (event) {
+        event.preventDefault();  // Предотвращает переход по ссылке
+        socket.emit('run_script');
+    });
 
-<a class="iksweb" href="#" title="Start sorting">Start sorting</a>
+    socket.on('script_result', function (message) {
+        document.getElementById('message').textContent = message;
+    });
+</script>
+
 
     <script>
+    function startSorting() {
+    // Создаем новый объект XMLHttpRequest
+    var xhttp = new XMLHttpRequest();
+
+    // Определяем функцию, которая будет вызвана при изменении состояния запроса
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Запрос успешно выполнен и ответ получен
+            console.log(this.responseText);
+        }
+    };
+
+    // Отправляем GET-запрос на URL /sort_files
+    xhttp.open("GET", "/sort_files", true);
+    xhttp.send();
+}
+
+
     // Загрузка лога сообщений при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         const log = localStorage.getItem('log');
@@ -166,9 +199,6 @@
         }
     }
 });
-
-
-
 </script>
 
 </body>
