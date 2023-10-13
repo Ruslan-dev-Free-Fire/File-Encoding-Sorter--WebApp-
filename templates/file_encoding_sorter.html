@@ -68,7 +68,6 @@
         {% endwith %}
     </div>
     <div class="sc-16z3mvs-0 kbLfHX" style="display: none;"></div>
-</div>
 
     <div class="mytextlogfile">
     {% for message in messages %}
@@ -91,8 +90,10 @@
     });
 
     socket.on('script_result', function (message) {
-        document.getElementById('message').textContent = message;
-    });
+    var downloadLink = '/path/to/download/' + message;  // Замените на реальный путь к файлу
+    var downloadMessage = 'ファイルが並べ替えられました<br><a href="' + downloadLink + '">このリンクからダウンロードできます</a>';
+    document.getElementById('mytextlogfile').innerHTML = downloadMessage;
+});
 </script>
 
 
@@ -199,6 +200,8 @@
         }
     }
 });
+
+
 </script>
 
 </body>

@@ -1,11 +1,9 @@
 import os
 import shutil
-import sys
 
 from chardet.universaldetector import UniversalDetector
 import logging
 
-print(sys.version)
 
 # Настройка базового конфига
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
@@ -90,11 +88,16 @@ if txt_files:
         except Exception as e:
             print(f"An error occurred while processing a file: {e}")
 
-# Удаление пустых папок
+# Удаление пустых папок и создание архива
 for folder_name in encoding_to_folder_map.values():
     folder = os.path.join(os.getcwd(), "Ready", folder_name)
     try:
-        os.rmdir(folder)
-        print(f"Empty folder '{folder}' removed successfully.")
+        if not os.listdir(folder):
+            os.rmdir(folder)
+            print(f"Empty folder '{folder}' removed successfully.")
     except OSError as e:
         print(f"Error: {folder} : {e.strerror}")
+
+# Создание архива с обработанными файлами
+shutil.make_archive('Ready/Completed_files', 'zip', os.path.join(os.getcwd(), "Ready"))
+print("Archive 'Ready/Completed_files.zip' created successfully.")

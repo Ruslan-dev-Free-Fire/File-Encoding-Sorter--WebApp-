@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 from flask_socketio import SocketIO
 import os
 import subprocess
+from flask import send_from_directory
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'  # Замените 'your_secret_key_here' на секретный ключ
@@ -20,6 +21,12 @@ socketio = SocketIO(app)
 # Функция для проверки разрешенных расширений файлов
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
+
+
+@app.route('/path/to/download/<filename>')
+def download_file(filename):
+    return send_from_directory(os.path.join(os.getcwd(), "Ready"), filename, as_attachment=True)
+
 
 @app.route('/')
 def home():
