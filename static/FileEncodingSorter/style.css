@@ -43,7 +43,7 @@ html {
 			
 			.mytextlogfile {
     position: absolute;
-    top: 63%;
+    top: 82%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 337px;
@@ -55,6 +55,18 @@ html {
     padding: 7px;
     max-height: 200px;
     overflow-y: auto;
+}
+
+.flex-display-9f8d3cb2 {
+    display: flex;
+}
+
+.file-input-4d9a2c1f {
+    display: none;
+}
+
+.hidden-div-7e3b6fa0 {
+    display: none;
 }
 
 /* Стиль записей лога */
@@ -69,11 +81,11 @@ html {
 				text-decoration: none;
 				padding: 10px 21px;
 				color: #000000;
-				background: #ffffff;
+				background: #65ff96;
 				border-radius: 54px;
 				border: 5px solid #beff82;
 				position: absolute;
-				top: 50%;
+				top: 66%;
 				left: 50%;
 				transform: translate(-50%, -50%);
 			}
@@ -106,7 +118,7 @@ html {
 				color: #ff0000;
 				border: 5px solid #32c746;
 				transition: all 0s ease;
-			}	
+			}
 
             /*!sc*/
             abbr[title] {
@@ -5208,7 +5220,7 @@ html {
 
             /*!sc*/
             .QrMRD {
-                position: relative;
+                position: absolute;
                 border-radius: 8px;
                 background: rgb(27 141 65);
                 width: 100%;
@@ -5380,6 +5392,7 @@ html {
             /*!sc*/
             .kkceuK {
                 position: relative;
+                left: -3%;
                 display: -webkit-box;
                 display: -webkit-flex;
                 display: -ms-flexbox;
@@ -5528,7 +5541,8 @@ html {
                 font-size: 16px;
                 line-height: 24px;
                 padding-top: 12px;
-                text-align: center;
+                text-align: left; /* Устанавливаем выравнивание текста влево */
+    margin-left: -51px; /* Добавляем отступ слева (измените значение по вашему желанию) */
                 color: rgba(255,255,255,1);
             }
 

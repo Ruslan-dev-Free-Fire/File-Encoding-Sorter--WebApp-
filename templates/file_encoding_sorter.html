@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>File Encoding Sorter</title>
+<title>File Encoding Sorter</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js;">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='FileEncodingSorter/style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='FileEncodingSorter/script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+
 </head>
 <body>
     <header class="rh8nkv-0 hoywjo">
-        <div class="rh8nkv-1 llspIR">
+<div class="rh8nkv-1 llspIR">
             <h1 class="rh8nkv-2 fHlUjz">File Encoding Sorter</h1>
             <h2 class="rh8nkv-6 fvIoRp">ワンクリックでドキュメントをコーディング別に整理！</h2>
         </div>
@@ -16,14 +20,14 @@
             <div class="fp19qh-0 cjZeTl">
                 <div class="tbjvbz-0 kYTCXp">
                     <div class="tbjvbz-1 dVwpTd">
-                        <div style="display:flex" class="sc-10126gd-0 dHiqbD" id="__cond-705618">
+                        <div class="flex-container sc-10126gd-0 dHiqbD" id="__cond-705618">
                             <label class="sc-8s01yt-0 deyfvp">
                                 <div data-test-id="intro-tool-droparea" class="sc-7sg2r-0 QrMRD">
                                     <div class="sc-7sg2r-1 bFabPl"></div>
                                     <div class="sc-8s01yt-1 vma-Dc">
                                         <form class="sc-16z3mvs-1 GbsEV" method="post" enctype="multipart/form-data" action="{{ url_for('file_encoding_sorter') }}">
     <label class="sc-16z3mvs-2 dAA-dEm">
-        <input type="file" name="file" accept=".txt" class="sc-16z3mvs-0 kbLfHX" style="display: none;">
+        <input type="file" name="file" accept=".txt" class="hidden-input sc-16z3mvs-0 kbLfHX">
         <div class="sc-8s01yt-2 fLFedC">
             <div class="sc-8s01yt-4 GrhAj">
                 <div class="sc-2xfn8l-0 bWaBkl sc-1ohxvl7-0 kvbqhA">
@@ -67,55 +71,29 @@
             {% endif %}
         {% endwith %}
     </div>
-    <div class="sc-16z3mvs-0 kbLfHX" style="display: none;"></div>
+    <div class="hidden-input sc-16z3mvs-0 kbLfHX"></div>
 
     <div class="mytextlogfile" id="log">
     {% for message in messages %}
         <div class="log-entry">{{ message }}</div>
     {% endfor %}
 </div>
-    
+
 
 <!-- Ваш код для кнопки "Start sorting" -->
 <a class="iksweb" href="#" title="Start sorting" id="start-sorting">Start sorting</a>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
-<script type="text/javascript">
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-    $('#start-sorting').on('click', function (event) {
-        event.preventDefault();  // Предотвращает переход по ссылке
-        socket.emit('run_script');
-    });
-
-    socket.on('script_result', function(msg) {
-    document.getElementById('log').innerHTML += '<div class="log-entry">' + msg + '</div>';
-});
 
 
 
-</script>
 
 
-    <script>
-    function startSorting() {
-    // Создаем новый объект XMLHttpRequest
-    var xhttp = new XMLHttpRequest();
-
-    // Определяем функцию, которая будет вызвана при изменении состояния запроса
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            // Запрос успешно выполнен и ответ получен
-            console.log(this.responseText);
-        }
-    };
-
-    // Отправляем GET-запрос на URL /sort_files
-    xhttp.open("GET", "/sort_files", true);
-    xhttp.send();
-}
 
 
+
+
+
+<script>
     // Загрузка лога сообщений при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         const log = localStorage.getItem('log');
@@ -124,16 +102,7 @@
         }
     });
 
-    // Добавление сообщения в лог и сохранение его в localStorage
-    function addToLog(message) {
-        const logContainer = document.querySelector('.mytextlogfile');
-        const logEntry = document.createElement('div');
-        logEntry.textContent = message;
-        logContainer.appendChild(logEntry);
 
-        // Сохраняем обновленный лог в localStorage
-        localStorage.setItem('log', logContainer.innerHTML);
-    }
 
     document.addEventListener('DOMContentLoaded', function() {
     // Clear the log when the page is loaded
@@ -144,45 +113,7 @@
 });
 
 
-    const fileDropArea = document.getElementById('file-drop-area');
-    const fileInput = document.querySelector('.sc-16z3mvs-0.kbLfHX');
 
-    // Обработчик события dragover (когда файл перетаскивают над областью)
-    fileDropArea.addEventListener('dragover', function (e) {
-        e.preventDefault(); // Предотвращаем браузерное действие по умолчанию
-        fileDropArea.style.border = '2px dashed green';
-    });
-
-    // Обработчик события dragleave (когда файл перетаскивают из области)
-    fileDropArea.addEventListener('dragleave', function (e) {
-        e.preventDefault();
-        fileDropArea.style.border = 'none';
-    });
-
-    // Обработчик события drop (когда файл отпускают в область)
-    fileDropArea.addEventListener('drop', function (e) {
-        e.preventDefault(); // Предотвращаем браузерное действие по умолчанию
-        fileDropArea.style.border = 'none';
-
-        const files = e.dataTransfer.files;
-        handleFiles(files);
-    });
-
-    function handleFiles(files) {
-    for (const file of files) {
-        if (file) {
-            const allowedExtensions = ['txt'];
-            const fileExtension = file.name.split('.').pop().toLowerCase();
-
-            if (allowedExtensions.indexOf(fileExtension) === -1) {
-                alert('Only files with the extension .txt are allowed');
-            } else {
-                fileInput.files = files;
-                fileInput.form.submit();  // Automatically submit the form
-            }
-        }
-    }
-}
 
 
      document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', function() {
