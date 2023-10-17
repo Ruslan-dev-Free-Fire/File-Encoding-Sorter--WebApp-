@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>File Encoding Sorter</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js;">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='FileEncodingSorter/style.css') }}">
@@ -84,56 +84,67 @@
 <a class="iksweb" href="#" title="Start sorting" id="start-sorting">Start sorting</a>
 
 
-
-
-
-
-
-
-
-
-
 <script>
-    // Загрузка лога сообщений при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        const log = localStorage.getItem('log');
-        if (log) {
-            document.querySelector('.mytextlogfile').innerHTML = log;
-        }
-    });
+// Только лог
+// Функция для загрузки лога сообщений при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Получаем сохраненный лог из localStorage
+    const log = localStorage.getItem('log');
 
+    // Проверяем, есть ли сохраненный лог
+    if (log) {
+        // Найдем элемент с классом "mytextlogfile"
+        const logContainer = document.querySelector('.mytextlogfile');
 
-
-    document.addEventListener('DOMContentLoaded', function() {
-    // Clear the log when the page is loaded
-    localStorage.removeItem('log');
-
-    // Clear the displayed log messages
-    document.querySelector('.mytextlogfile').innerHTML = '';
-});
-
-
-
-
-
-     document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', function() {
-    var fileInput = this;
-    if (fileInput.files.length > 0) {
-        var file = fileInput.files[0];
-        var allowedExtensions = ['txt'];
-
-        var fileExtension = file.name.split('.').pop().toLowerCase();
-        if (allowedExtensions.indexOf(fileExtension) === -1) {
-            alert('Only files with the extension .txt are allowed');
-            fileInput.value = '';  // Clear the field so the user can select another file
-        } else {
-            fileInput.form.submit();  // Automatically submit the form
-        }
+        // Устанавливаем содержимое элемента равным сохраненному логу
+        logContainer.innerHTML = log;
     }
 });
 
+// Функция для очистки лога при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Удаляем сохраненный лог из localStorage
+    localStorage.removeItem('log');
 
+    // Найдем элемент с классом "mytextlogfile"
+    const logContainer = document.querySelector('.mytextlogfile');
+
+    // Очищаем отображаемый лог сообщений на странице
+    logContainer.innerHTML = '';
+});
+
+// Обработчик изменения файла
+document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', function() {
+    // Получаем текущий элемент ввода файла
+    var fileInput = this;
+
+    // Проверяем, что пользователь выбрал файл
+    if (fileInput.files.length > 0) {
+        // Получаем информацию о выбранном файле
+        var file = fileInput.files[0];
+
+        // Разрешенные расширения файлов
+        var allowedExtensions = ['txt'];
+
+        // Получаем расширение выбранного файла и приводим его к нижнему регистру
+        var fileExtension = file.name.split('.').pop().toLowerCase();
+
+        // Проверяем, соответствует ли расширение разрешенным
+        if (allowedExtensions.indexOf(fileExtension) === -1) {
+            // Выводим предупреждение, если расширение не разрешено
+            alert('Only files with the extension .txt are allowed');
+
+            // Очищаем поле ввода файла, чтобы пользователь мог выбрать другой файл
+            fileInput.value = '';
+        } else {
+            // Автоматически отправляем форму, к которой принадлежит файловый ввод
+            fileInput.form.submit();
+        }
+    }
+});
+// Только лог end
 </script>
+
 
 </body>
 </html>

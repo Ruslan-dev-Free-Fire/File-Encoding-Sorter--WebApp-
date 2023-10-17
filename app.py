@@ -56,11 +56,17 @@ def allowed_file(filename):
 def download_file():
     return send_from_directory('Ready', 'Completed_files.zip')
 
+
+# Функция отправки запроса на кнопку для выполнения скрипта сортировки
 @app.route('/sort_files', methods=['GET', 'POST'])
 def sort_files():
     if request.method == 'POST':
-        # Your current code for handling POST requests
-        pass
+        try:
+            subprocess.run(['python', 'C:\\MyCode\\Python\\Ruslan-dev-Free-Fire_Site\\file_sorter.py'], check=True)
+            # Return the URL of the created archive
+            return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
+        except subprocess.CalledProcessError as e:
+            return f'Error during sorting: {e}'
     else:
         # Processing GET requests
         try:
@@ -69,11 +75,11 @@ def sort_files():
             return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
         except subprocess.CalledProcessError as e:
             return f'Error during sorting: {e}'
+# Функция отправки запроса на кнопку для выполнения скрипта сортировки end
 
-
-mail = Mail(app)
 
 # Обратная связь
+mail = Mail(app)
 
 # Настройка Flask-Mail
 app.config['MAIL_SERVER']='sg1-ss106.a2hosting.com'
