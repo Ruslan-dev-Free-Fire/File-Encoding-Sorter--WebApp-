@@ -1,5 +1,6 @@
 import os
 import shutil
+from zipfile import ZipFile
 
 from chardet.universaldetector import UniversalDetector
 
@@ -85,5 +86,19 @@ for folder_name in encoding_to_folder_map.values():
         print(f"Error: {folder} : {e.strerror}")
 
 # Создание архива с обработанными файлами
-shutil.make_archive('Ready/Completed_files', 'zip', os.path.join(os.getcwd(), "Ready"))
+with ZipFile('Ready/Completed_files.zip', 'w') as zipf:
+    for folder_name in encoding_to_folder_map.values():
+        folder = os.path.join(os.getcwd(), "Ready", folder_name)
+        if os.path.exists(folder):
+            for filename in os.listdir(folder):
+                if not filename.endswith('.zip'):  # Исключаем файлы .zip
+                    zipf.write(os.path.join(folder, filename), arcname=os.path.join(folder_name, filename))
+
 print("Archive 'Ready/Completed_files.zip' created successfully.")
+
+# Удаление папок после создания архива
+for folder_name in encoding_to_folder_map.values():
+    folder = os.path.join(os.getcwd(), "Ready", folder_name)
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+        print(f"Folder '{folder}' removed successfully.")

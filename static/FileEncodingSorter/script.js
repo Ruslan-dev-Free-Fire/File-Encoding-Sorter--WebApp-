@@ -1,71 +1,25 @@
-function initializeSockJS() {
-    var sock = new SockJS('http://' + document.domain + ':' + location.port + '/sockjs');
-
-    $('#start-sorting').on('click', function (event) {
-        event.preventDefault();  // Предотвращает переход по ссылке
-        sock.send('run_script');
-    });
-
-    sock.onmessage = function(e) {
-        document.getElementById('log').innerHTML += '<div class="log-entry">' + e.data + '</div>';
-    };
-}
-
-function startSorting() {
-    // Создаем новый объект XMLHttpRequest
-    var xhttp = new XMLHttpRequest();
-
-    // Определяем функцию, которая будет вызвана при изменении состояния запроса
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            // Запрос успешно выполнен и ответ получен
-            console.log(this.responseText);
+$(document).ready(function(){
+  $("#start-sorting").click(function(e){
+    e.preventDefault(); // Prevent the default action of the link
+    $.ajax({
+        url: '/sort_files', // The route that will run the script
+        type: 'POST', // The method of the request
+        success: function(response){
+            // Handle the response from the server
+            console.log(response);
+            // Insert the download link into the log panel
+            $('#log').append('<div class="log-entry">ファイルが並べ替えられました。このリンクからダウンロードできます: <a href="/download">ダウンロード</a></div>');
+        },
+        error: function(error){
+            // Handle any errors
+            console.log(error);
         }
-    };
-
-    // Отправляем GET-запрос на URL /sort_files
-    xhttp.open("GET", "/sort_files", true);
-    xhttp.send();
-}
-
-// Загрузка лога сообщений при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    const log = localStorage.getItem('log');
-    if (log) {
-        document.querySelector('.mytextlogfile').innerHTML = log;
-    }
+    });
+});
 });
 
-// Добавление сообщения в лог и сохранение его в localStorage
-function addToLog(message) {
-    const logContainer = document.querySelector('.mytextlogfile');
-    const logEntry = document.createElement('div');
-    logEntry.textContent = message;
-    logContainer.appendChild(logEntry);
 
-    // Сохраняем обновленный лог в localStorage
-    localStorage.setItem('log', logContainer.innerHTML);
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-// Clear the log when the page is loaded
-localStorage.removeItem('log');
-
-// Clear the displayed log messages
-document.querySelector('.mytextlogfile').innerHTML = '';
-});
-
-window.onload = function() {
-    const fileDropArea = document.getElementById('file-drop-area');
-    const fileInput = document.querySelector('.sc-16z3mvs-0.kbLfHX');
-
-    if (fileDropArea) {
-        fileDropArea.addEventListener('dragover', function (e) {
-            e.preventDefault(); // Предотвращаем браузерное действие по умолчанию
-            fileDropArea.style.border = '2px dashed green';
-        });
-    }
-};
 
 const fileDropArea = document.getElementById('file-drop-area');
 
@@ -101,3 +55,24 @@ for (const file of files) {
     }
 }
 }
+
+// прочие функции
+
+function startSorting() {
+    // Создаем новый объект XMLHttpRequest
+    var xhttp = new XMLHttpRequest();
+
+    // Определяем функцию, которая будет вызвана при изменении состояния запроса
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Запрос успешно выполнен и ответ получен
+            console.log(this.responseText);
+        }
+    };
+
+    // Отправляем GET-запрос на URL /sort_files
+    xhttp.open("GET", "/sort_files", true);
+    xhttp.send();
+}
+
+// прочие функции end
