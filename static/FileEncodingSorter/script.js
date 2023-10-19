@@ -97,7 +97,7 @@ function startSorting() {
         }
     };
 
-    // Отправляем GET-запрос на URL /sort_files
+    // Отправляем GET-запрос на URL /sort_files для запуска сортировки
     xhttp.open("GET", "/sort_files", true);
     xhttp.send();
 }

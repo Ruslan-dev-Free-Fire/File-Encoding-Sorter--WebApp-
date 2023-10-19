@@ -1,22 +1,12 @@
 import os
 import shutil
 from zipfile import ZipFile
-
 from chardet.universaldetector import UniversalDetector
 
-
-# Путь к папке с файлами
-folder_path = "uploads"  # Путь к папке с загруженными файлами
-
-
-# Проверяем, есть ли файлы в папке uploads
-if not any(os.scandir(folder_path)):
-    print("Нет файлов для сортировки")
-    exit()
-
+# Путь к основной папке с файлами
+base_folder_path = "uploads"  # Путь к папке с загруженными файлами
 
 # Маппинг кодировок на папки
-# noinspection PyDictDuplicateKeys
 encoding_to_folder_map = {
     "ISO-8859-1": "ISO-8859-1",
     "ascii": "ANSI",
@@ -26,36 +16,28 @@ encoding_to_folder_map = {
     "Windows-1252": "Windows-1252",
     "utf-8": "UTF-8",
     "UTF-16": "UTF-16",
-    "utf-8": "UTF8",
-    None: "Unknown"  # Добавлено для файлов с неопознанной кодировкой
+    None: "Unknown"
 }
 
-# Получение списка файлов в папке
-txt_files = [file for file in os.listdir(folder_path) if file.lower().endswith(".txt")]
+# Получение списка подпапок в папке uploads
+user_folders = [os.path.join(base_folder_path, folder) for folder in os.listdir(base_folder_path) if os.path.isdir(os.path.join(base_folder_path, folder))]
 
-if txt_files:
-    print(f"Number of .txt files in the folder: {len(txt_files)}")
+for user_folder_path in user_folders:
+    # Создание уникальной папки внутри папки Ready для каждого пользователя
+    user_ready_folder = os.path.join('Ready', os.path.basename(user_folder_path))
+    os.makedirs(user_ready_folder, exist_ok=True)
 
-    # Создание папок для сортировки
-    for folder_name in encoding_to_folder_map.values():
-        folder = os.path.join(os.getcwd(), "Ready", folder_name)
-        os.makedirs(folder, exist_ok=True)
-        print(f"Folder '{folder}' created successfully.")
+    txt_files = [file for file in os.listdir(user_folder_path) if file.lower().endswith(".txt")]
 
-    # Обработка файлов
-    for txt_file in txt_files:
-        file_path = os.path.join(folder_path, txt_file)
-        print(f"Processing file: {file_path}")
+    if txt_files:
+        print(f"Number of .txt files in folder '{user_folder_path}': {len(txt_files)}")
 
-        try:
-            # Если в файле есть определенные символы, предположим, что это SHIFT_JIS.
-            shift_jis_symbols = ["„q", "„y", "„x", "„~", "„u", "„ѓ", "„Ѓ", "„p",
-                                 "„‚", "„Ђ", "„|", "„Ћ", "„S", "‚ ", "‚И", "‚Ѕ",
-                                 "‚М", "‰п", "€х", "‚Н",  "  ‚Е",  "‚·ЃB"]
-            if any(symbol in open(file_path, 'r', errors='ignore').read() for symbol in shift_jis_symbols):
-                encoding = "Shift_JIS"
-            else:
-                # Определение кодировки с помощью chardet
+        for txt_file in txt_files:
+            file_path = os.path.join(user_folder_path, txt_file)
+            print(f"Processing file: {file_path}")
+
+            try:
+                # Определение кодировки файла с помощью chardet
                 detector = UniversalDetector()
                 with open(file_path, 'rb') as file:
                     for line in file:
@@ -67,45 +49,42 @@ if txt_files:
 
                 print(f"Detected encoding for file '{file_path}': {encoding}")
 
-                # Если файл обнаружен как ANSI и не содержит не-ASCII символов,
-                # предположим, что это на самом деле UTF-8.
-                if encoding == 'ISO-8859-1' and all(31 < byte < 128 for byte in open(file_path, 'rb').read()):
-                    encoding = 'UTF-8'
+                target_folder_name = encoding_to_folder_map.get(encoding, 'Unknown')
 
-            target_folder_name = encoding_to_folder_map.get(encoding, 'Unknown')
-            # Используем 'Unknown', если кодировка не найдена
+                # Создание папки для каждой кодировки внутри уникальной папки пользователя
+                target_folder = os.path.join(user_ready_folder, target_folder_name)
+                os.makedirs(target_folder, exist_ok=True)
 
-            target_folder = os.path.join(os.getcwd(), "Ready", target_folder_name)  # Путь к целевой папке в корневой директории
-            target_file_path = os.path.join(target_folder, txt_file)
-            shutil.copy(file_path, target_file_path)
-            print(f"File '{file_path}' copied to '{target_file_path}'.")
-        except Exception as e:
-            print(f"An error occurred while processing a file: {e}")
+                target_file_path = os.path.join(target_folder, txt_file)
+                shutil.copy(file_path, target_file_path)
+                print(f"File '{file_path}' copied to '{target_file_path}'.")
+            except Exception as e:
+                print(f"An error occurred while processing a file: {e}")
 
-# Удаление пустых папок и создание архива
-for folder_name in encoding_to_folder_map.values():
-    folder = os.path.join(os.getcwd(), "Ready", folder_name)
-    try:
-        if not os.listdir(folder):
-            os.rmdir(folder)
-            print(f"Empty folder '{folder}' removed successfully.")
-    except OSError as e:
-        print(f"Error: {folder} : {e.strerror}")
+        # Создание архива с обработанными файлами в уникальной папке пользователя
+        archive_name = f'Completed_files_{os.path.basename(user_folder_path)}.zip'
+        with ZipFile(os.path.join(user_ready_folder, archive_name), 'w') as zipf:
+            for encoding_folder in encoding_to_folder_map.values():
+                encoding_folder_path = os.path.join(user_ready_folder, encoding_folder)
+                if os.path.exists(encoding_folder_path):
+                    for filename in os.listdir(encoding_folder_path):
+                        if not filename.endswith('.zip'):  # Исключаем файлы .zip
+                            full_file_path = os.path.join(encoding_folder_path, filename)
+                            # Добавляем файл в архив с указанием относительного пути
+                            zipf.write(full_file_path, arcname=os.path.join(encoding_folder, filename))
 
-# Создание архива с обработанными файлами
-with ZipFile('Ready/Completed_files.zip', 'w') as zipf:
-    for folder_name in encoding_to_folder_map.values():
-        folder = os.path.join(os.getcwd(), "Ready", folder_name)
-        if os.path.exists(folder):
-            for filename in os.listdir(folder):
-                if not filename.endswith('.zip'):  # Исключаем файлы .zip
-                    zipf.write(os.path.join(folder, filename), arcname=os.path.join(folder_name, filename))
+        print(f"Archive '{user_ready_folder}/{archive_name}' created successfully.")
 
-print("Archive 'Ready/Completed_files.zip' created successfully.")
+        # Удаление исходных файлов из уникальной папки пользователя после создания архива
+        for filename in os.listdir(user_ready_folder):
+            file_path = os.path.join(user_ready_folder, filename)
+            try:
+                if os.path.isfile(file_path) and file_path.endswith('.txt'):  # Удаляем только .txt файлы
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
 
-# Удаление папок после создания архива
-for folder_name in encoding_to_folder_map.values():
-    folder = os.path.join(os.getcwd(), "Ready", folder_name)
-    if os.path.exists(folder):
-        shutil.rmtree(folder)
-        print(f"Folder '{folder}' removed successfully.")
+        print("All source files deleted successfully.")
+

@@ -3,6 +3,8 @@ from werkzeug.utils import secure_filename
 from flask_sock import Sock
 import os
 import subprocess
+from flask import Flask, request, session
+import time
 from flask import send_from_directory
 from flask_mail import Mail, Message
 #from flask_talisman import Talisman
@@ -27,12 +29,16 @@ sock = Sock(app)
 
 app.config['SECRET_KEY'] = 'your_secret_key_here'  # Замените 'your_secret_key_here' на секретный ключ
 
+# Для уникальной сессии
+app.secret_key = 'your_secret_key_here'
+
 # Указываем папку для загрузки файлов
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Максимальный размер загружаемых файлов (в байтах)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Например, 16 MB
+
 
 @sock.route('/sockjs')
 def sockjs(sock):
@@ -87,6 +93,7 @@ def sort_files():
 # Функция отправки запроса на кнопку для выполнения скрипта сортировки end
 
 
+# Создание уникальной папки для каждой сессии
 @app.route('/file_encoding_sorter', methods=['GET', 'POST'])
 def file_encoding_sorter():
     if request.method == 'POST':
@@ -110,12 +117,19 @@ def file_encoding_sorter():
         # Если файл прошел все проверки, сохраняем его
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            # Если уникальная папка пользователя не существует, создаем новую
+            if 'user_folder' not in session or not os.path.exists(session['user_folder']):
+                session['user_folder'] = os.path.join("uploads", str(time.time()))
+                os.makedirs(session['user_folder'], exist_ok=True)
+
+            # Сохраняем файл в уникальной папке пользователя
+            file.save(os.path.join(session['user_folder'], filename))
+
             flash('File uploaded successfully', 'success')
             # Здесь вы можете провести дополнительную обработку файла, если это необходимо
 
     return render_template('file_encoding_sorter.html')
-
 
 
 # My page end

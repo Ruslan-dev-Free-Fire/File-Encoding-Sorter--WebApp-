@@ -117,6 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Очищаем отображаемый лог сообщений на странице
     logContainer.innerHTML = '';
 });
+// Только лог end
+
 
 // Обработчик изменения файла
 document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', function() {
@@ -147,7 +149,7 @@ document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', functi
         }
     }
 });
-// Только лог end
+
 </script>
 
 <script>
@@ -207,13 +209,13 @@ if (fileDropArea) {
     });
 
     // Обработчик события drop (когда файл отпускают в область)
-    fileDropArea.addEventListener('drop', function (e) {
-        e.preventDefault(); // Предотвращаем браузерное действие по умолчанию
-        fileDropArea.style.border = 'none';
+fileDropArea.addEventListener('drop', function (e) {
+    e.preventDefault(); // Предотвращаем браузерное действие по умолчанию
+    fileDropArea.style.border = 'none';
 
-        const files = e.dataTransfer.files;
-        handleFiles(files);
-    });
+    const files = e.dataTransfer.files;
+    handleFiles(files);  // Загружаем файлы на сервер, но не запускаем сортировку
+});
 }
 
 <!-- Как браузер реагирует на перенос фвйлов в область загрузки  конец -->
