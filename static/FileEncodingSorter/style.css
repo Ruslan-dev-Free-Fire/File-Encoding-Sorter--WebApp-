@@ -57,6 +57,11 @@ html {
     overflow-y: auto;
 }
 
+.flash-messages-list {
+    margin-top: 185px;
+    color: white; /* Устанавливаем белый цвет текста */
+}
+
 .flex-display-9f8d3cb2 {
     display: flex;
 }

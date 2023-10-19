@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>File Encoding Sorter</title>
-
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js https://cdnjs.cloudflare.com;">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='FileEncodingSorter/style.css') }}">
@@ -59,26 +59,29 @@
             </div>
         </div>
     </header>
-    <div class="flash-messages">
-        <!-- Здесь выведем flash-сообщения -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flash-messages-list">
-                    {% for category, message in messages %}
-                        <li class="flash-message {{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </div>
-    <div class="hidden-input sc-16z3mvs-0 kbLfHX"></div>
+
+<div class="flash-messages">
+    <!-- Здесь выведем flash-сообщения -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-messages-list">
+                {% for category, message in messages %}
+                    <li class="flash-message {{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+
+
 
 <!-- Панель появления ссылки на скачку архива -->
-    <div class="mytextlogfile" id="log">
+ <div class="mytextlogfile" id="log">
     {% for message in messages %}
         <div class="log-entry">{{ message }}</div>
     {% endfor %}
 </div>
+
 
 
 <!-- Ваш код для кнопки "Start sorting" -->
@@ -86,6 +89,7 @@
 
 
 <script>
+
 // Только лог
 // Функция для загрузки лога сообщений при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
@@ -144,6 +148,78 @@ document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', functi
     }
 });
 // Только лог end
+</script>
+
+<script>
+<!-- Как браузер реагирует на перенос файлов в область загрузки -->
+
+function handleFiles(files) {
+    for (const file of files) {
+        if (file) {
+            const allowedExtensions = ['txt'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (allowedExtensions.indexOf(fileExtension) === -1) {
+                alert('Only files with the extension .txt are allowed');
+            } else {
+                // Создаем новый объект FormData и добавляем файл
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Создаем новый объект XMLHttpRequest
+                var xhttp = new XMLHttpRequest();
+
+                // Определяем функцию, которая будет вызвана при изменении состояния запроса
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // Запрос успешно выполнен и ответ получен
+                        console.log(this.responseText);
+
+                        // Обновляем пользовательский интерфейс для отображения сообщения об успешной загрузке
+                        var messageBox = document.getElementById('log'); // замените 'messageBox' на идентификатор элемента, в котором должно отображаться сообщение
+                        if (messageBox) {
+                            messageBox.textContent = 'File uploaded successfully';
+                        }
+                    }
+                };
+
+                // Отправляем POST-запрос на URL /file_encoding_sorter с файлом в качестве данных формы
+                xhttp.open("POST", "/file_encoding_sorter", true);
+                xhttp.send(formData);
+            }
+        }
+    }
+}
+
+
+const fileDropArea = document.getElementById('file-drop-area');
+
+if (fileDropArea) {
+    // Обработчик события dragover (когда файл находится над областью)
+    fileDropArea.addEventListener('dragover', function (e) {
+        e.preventDefault();
+    });
+
+    // Обработчик события dragleave (когда файл перетаскивают из области)
+    fileDropArea.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        fileDropArea.style.border = 'none';
+    });
+
+    // Обработчик события drop (когда файл отпускают в область)
+    fileDropArea.addEventListener('drop', function (e) {
+        e.preventDefault(); // Предотвращаем браузерное действие по умолчанию
+        fileDropArea.style.border = 'none';
+
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    });
+}
+
+<!-- Как браузер реагирует на перенос фвйлов в область загрузки  конец -->
+
+
+
 </script>
 
 

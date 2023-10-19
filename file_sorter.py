@@ -8,6 +8,13 @@ from chardet.universaldetector import UniversalDetector
 # Путь к папке с файлами
 folder_path = "uploads"  # Путь к папке с загруженными файлами
 
+
+# Проверяем, есть ли файлы в папке uploads
+if not any(os.scandir(folder_path)):
+    print("Нет файлов для сортировки")
+    exit()
+
+
 # Маппинг кодировок на папки
 # noinspection PyDictDuplicateKeys
 encoding_to_folder_map = {

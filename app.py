@@ -48,6 +48,7 @@ def sockjs(sock):
             except Exception as e:
                 sock.send(f'Error during sorting: {e}')
 
+
 # Функция для проверки разрешенных расширений файлов
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
@@ -62,7 +63,11 @@ def download_file():
 def sort_files():
     if request.method == 'POST':
         try:
-            subprocess.run(['python', 'C:\\MyCode\\Python\\Ruslan-dev-Free-Fire_Site\\file_sorter.py'], check=True)
+            # Проверяем, есть ли файлы для сортировки
+            if not os.listdir(UPLOAD_FOLDER):  # замените 'path_to_your_files' на путь к вашим файлам
+                return 'No files to sort'
+
+            subprocess.run(['python', './file_sorter.py'], check=True)
             # Return the URL of the created archive
             return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
         except subprocess.CalledProcessError as e:
@@ -70,12 +75,50 @@ def sort_files():
     else:
         # Processing GET requests
         try:
-            subprocess.run(['python', 'C:\\MyCode\\Python\\Ruslan-dev-Free-Fire_Site\\file_sorter.py'], check=True)
+            # Проверяем, есть ли файлы для сортировки
+            if not os.listdir(UPLOAD_FOLDER):  # замените 'path_to_your_files' на путь к вашим файлам
+                return 'No files to sort'
+
+            subprocess.run(['python', './file_sorter.py'], check=True)
             # Return the URL of the created archive
             return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
         except subprocess.CalledProcessError as e:
             return f'Error during sorting: {e}'
 # Функция отправки запроса на кнопку для выполнения скрипта сортировки end
+
+
+@app.route('/file_encoding_sorter', methods=['GET', 'POST'])
+def file_encoding_sorter():
+    if request.method == 'POST':
+        # Проверка, был ли выбран файл
+        if 'file' not in request.files:
+            flash('File not selected', 'error')
+            return redirect(request.url)
+
+        file = request.files['file']
+
+        # Если пользователь не выбрал файл, браузер отправит пустое поле без имени файла
+        if file.filename == '':
+            flash('File not selected', 'error')
+            return redirect(request.url)
+
+        # Проверка разрешенных расширений файла
+        if not allowed_file(file.filename):
+            flash('Only files with the extension .txt are allowed', 'error')
+            return redirect(request.url)
+
+        # Если файл прошел все проверки, сохраняем его
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('File uploaded successfully', 'success')
+            # Здесь вы можете провести дополнительную обработку файла, если это необходимо
+
+    return render_template('file_encoding_sorter.html')
+
+
+
+# My page end
 
 
 # Обратная связь
@@ -112,38 +155,6 @@ def home():
 @app.route('/thanks')
 def thanks():
     return render_template('thanks.html')
-
-
-@app.route('/file_encoding_sorter', methods=['GET', 'POST'])
-def file_encoding_sorter():
-    if request.method == 'POST':
-        # Проверка, был ли выбран файл
-        if 'file' not in request.files:
-            flash('File not selected', 'error')
-            return redirect(request.url)
-
-        file = request.files['file']
-
-        # Если пользователь не выбрал файл, браузер отправит пустое поле без имени файла
-        if file.filename == '':
-            flash('File not selected', 'error')
-            return redirect(request.url)
-
-        # Проверка разрешенных расширений файла
-        if not allowed_file(file.filename):
-            flash('Only files with the extension .txt are allowed', 'error')
-            return redirect(request.url)
-
-        # Если файл прошел все проверки, сохраняем его
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('File uploaded successfully', 'success')
-            # Здесь вы можете провести дополнительную обработку файла, если это необходимо
-
-    return render_template('file_encoding_sorter.html')
-
-# My page end
 
 
 if __name__ == '__main__':
