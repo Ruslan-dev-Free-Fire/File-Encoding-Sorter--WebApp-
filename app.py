@@ -1,12 +1,16 @@
+import time
+import uuid
+import json
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from flask_sock import Sock
 import os
 import subprocess
 from flask import Flask, request, session
-import time
 from flask import send_from_directory
 from flask_mail import Mail, Message
+from flask import request, make_response
+from flask import jsonify
 #from flask_talisman import Talisman
 
 app = Flask(__name__)
@@ -47,53 +51,81 @@ def sockjs(sock):
         print(msg)
         if msg == 'run_script':
             try:
-                subprocess.call(['python', 'file_sorter.py'])  # Замените 'file_sorter.py' на путь к вашему скрипту
-                download_link = url_for('download_file')
-                result_message = 'Sorting completed successfully. Download the sorted files <a href="{}">here</a>.'.format(download_link)
+                return_code = subprocess.call(['python', 'file_sorter.py'])  # Замените 'file_sorter.py' на путь к вашему скрипту
+
+                # Получаем идентификатор сессии из session['user_folder']
+                session_id = os.path.basename(session['user_folder'])
+
+                if return_code == 0:
+                    download_link = url_for('download_file', session_id=session_id)
+                    result_message = 'Sorting completed successfully. Download the sorted files <a href="{}">here</a>.'.format(download_link)
+                else:
+                    result_message = 'No files to sort.'
+
                 sock.send(result_message)
+
+                # Отправляем идентификатор сессии обратно клиенту
+                sock.send(json.dumps({'session_id': session_id}))
             except Exception as e:
                 sock.send(f'Error during sorting: {e}')
+
 
 
 # Функция для проверки разрешенных расширений файлов
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
 
-@app.route('/download')
-def download_file():
-    return send_from_directory('Ready', 'Completed_files.zip')
+@app.route('/download/<session_id>')
+def download_file(session_id):
+    return send_from_directory('Ready/' + session_id, 'Completed_files.zip')
+
+
+
+
 
 
 # Функция отправки запроса на кнопку для выполнения скрипта сортировки
 @app.route('/sort_files', methods=['GET', 'POST'])
 def sort_files():
     if request.method == 'POST':
+        if 'user_folder' in session:
+            session_id = os.path.basename(session['user_folder'])
+            if not os.path.exists(session['user_folder']):
+                return jsonify(message='No files to sort')
+            elif not os.listdir(session['user_folder']):
+                return jsonify(message='No files to sort')
+        else:
+            return jsonify(message='No files to sort')
+
         try:
-            # Проверяем, есть ли файлы для сортировки
-            if not os.listdir(UPLOAD_FOLDER):  # замените 'path_to_your_files' на путь к вашим файлам
-                return 'No files to sort'
+            if not os.listdir(UPLOAD_FOLDER):
+                return jsonify(message='No files to sort')
 
             subprocess.run(['python', './file_sorter.py'], check=True)
-            # Return the URL of the created archive
-            return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
+            download_link = url_for('download_file', session_id=session_id)
+            return jsonify(message='Sorting completed successfully.', session_id=session_id)
         except subprocess.CalledProcessError as e:
-            return f'Error during sorting: {e}'
-    else:
-        # Processing GET requests
-        try:
-            # Проверяем, есть ли файлы для сортировки
-            if not os.listdir(UPLOAD_FOLDER):  # замените 'path_to_your_files' на путь к вашим файлам
-                return 'No files to sort'
-
-            subprocess.run(['python', './file_sorter.py'], check=True)
-            # Return the URL of the created archive
-            return 'Sorting completed successfully. Download the sorted files <a href="/download">here</a>.'
-        except subprocess.CalledProcessError as e:
-            return f'Error during sorting: {e}'
+            return jsonify(message=f'Error during sorting: {e}')
 # Функция отправки запроса на кнопку для выполнения скрипта сортировки end
 
 
-# Создание уникальной папки для каждой сессии
+# Initialize the user's folder when the application starts
+def initialize_user_folder():
+    # Получаем идентификатор устройства из cookies
+    device_id = request.cookies.get('device_id')
+
+    # Если идентификатор устройства не установлен, создаем новый
+    if not device_id:
+        device_id = str(uuid.uuid4())
+
+    # Создаем уникальную папку для каждого пользователя с использованием IP-адреса и идентификатора устройства
+    user_folder = os.path.join(UPLOAD_FOLDER, f'{device_id}')
+    os.makedirs(user_folder, exist_ok=True)
+
+    # Сохраняем 'user_folder' в сессии
+    session['user_folder'] = user_folder
+
+# Route for file upload
 @app.route('/file_encoding_sorter', methods=['GET', 'POST'])
 def file_encoding_sorter():
     if request.method == 'POST':
@@ -123,13 +155,17 @@ def file_encoding_sorter():
                 session['user_folder'] = os.path.join("uploads", str(time.time()))
                 os.makedirs(session['user_folder'], exist_ok=True)
 
-            # Сохраняем файл в уникальной папке пользователя
-            file.save(os.path.join(session['user_folder'], filename))
-
-            flash('File uploaded successfully', 'success')
-            # Здесь вы можете провести дополнительную обработку файла, если это необходимо
+            try:
+                # Сохраняем файл в уникальной папке пользователя
+                file.save(os.path.join(session['user_folder'], filename))
+                flash('File uploaded successfully', 'success')
+                # Здесь вы можете провести дополнительную обработку файла, если это необходимо
+            except FileNotFoundError:
+                flash('Downloaded files not found', 'error')
 
     return render_template('file_encoding_sorter.html')
+
+
 
 
 # My page end

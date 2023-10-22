@@ -1,6 +1,4 @@
-// Глобальная переменная для хранения сообщений (all logs)
 var messages = [];
-
 $(document).ready(function(){
   $("#start-sorting").click(function(e){
     e.preventDefault(); // Prevent the default action of the link
@@ -8,13 +6,23 @@ $(document).ready(function(){
         url: '/sort_files', // The route that will run the script
         type: 'POST', // The method of the request
         success: function(response){
-            // Обработка успешного ответа от сервера
-            if (response === 'No files to sort') {
-                // Если нет файлов для сортировки, добавляем сообщение об ошибке в массив сообщений
-                messages.push('Файлы для сортировки не найдены.<br>');
+            // Check if the response is a JSON object
+            if (typeof response === 'object') {
+                // Check if the 'message' property exists in the response
+                if ('message' in response) {
+                    var message = response.message;
+                    // Check if the message is 'No files to sort'
+                    if (message === 'No files to sort') {
+                        // If no files to sort, add an error message to the messages array
+                        messages.push('Файлы для сортировки не найдены.<br>');
+                    } else {
+                        // If sorting was successful, add a success message to the messages array
+                        var sessionId = response.session_id;
+                        messages.push('Файлы были отсортированы. Вы можете скачать их <a href="/download/' + sessionId + '">здесь</a>.<br>');
+                    }
+                }
             } else {
-                // Если сортировка прошла успешно, добавляем сообщение об успехе в массив сообщений
-                messages.push('Файлы были отсортированы. Вы можете скачать их <a href="/download">здесь</a>.<br>');
+                console.error('Response is not a JSON object');
             }
         },
         error: function(error){
@@ -24,6 +32,7 @@ $(document).ready(function(){
     });
   });
 });
+
 
 setInterval(function() {
     var messageBox = document.getElementById('log');
@@ -57,6 +66,7 @@ setInterval(function() {
     }
 }, 500);
 // Проверяем наличие новых flash-сообщений каждые 500 миллисекунд конец
+
 
 
 // Создаем новый объект XMLHttpRequest
@@ -101,5 +111,23 @@ function startSorting() {
     xhttp.open("GET", "/sort_files", true);
     xhttp.send();
 }
+
+// Функция для открытия вкладок сообщений
+// Дожидаемся загрузки DOM
+document.addEventListener("DOMContentLoaded", function () {
+  // Получаем все элементы с классом 'question'
+  var questionElements = document.getElementsByClassName("question");
+
+  // Проверяем, существуют ли элементы
+  if (questionElements) {
+    // Если элементы существуют, добавляем обработчик события клика каждому из них
+    for (var i = 0; i < questionElements.length; i++) {
+      questionElements[i].addEventListener("click", function () {
+        // Переключаем класс 'active' родительского элемента при клике
+        this.parentNode.classList.toggle("active");
+      });
+    }
+  }
+});
 
 // прочие функции end

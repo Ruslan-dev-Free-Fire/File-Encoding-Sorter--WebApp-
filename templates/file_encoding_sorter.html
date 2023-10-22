@@ -2,12 +2,14 @@
 <html>
 <head>
 <title>File Encoding Sorter</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js https://cdnjs.cloudflare.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js https://cdnjs.cloudflare.com https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js;">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='FileEncodingSorter/script.js') }}"></script>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='FileEncodingSorter/style.css') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='FileEncodingSorter/script.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+
 
 </head>
 <body>
@@ -88,6 +90,82 @@
 <a class="iksweb" href="#" title="Start sorting" id="start-sorting">Start sorting</a>
 
 
+<div id="questionAnswerSection" class="section section-2 even">
+<h2 class="title">質問と回答</h2>
+<div class="content container">
+<div class="qas" itemscope="" itemtype="https://schema.org/FAQPage">
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">ファイルを整理する方法は?</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<ol>
+<li>拡張子が .txt のファイルの一覧を準備します。</li>
+<li>その後、ファイル選択ボタンをクリックするか、ファイルを手動で緑の領域にドラッグアンドドロップします。</li>
+<li>すべてのファイルをサーバーにアップロードしたら、"ソートの開始"ボタンをクリックしてファイルをダウンロードできます。</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">Как преобразовать файл PDF в Word?</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<ol>
+<li>Выберите соответствующий режим вверху этой страницы, чтобы конвертировать файлы PDF в другие форматы. В этом режиме вы можете, например, конвертировать PDF-файлы в Word.</li>
+<li>Затем кликните на поле выбора файла в верхней части страницы и выберите файлы PDF, которые вы хотите преобразовать в Word.</li>
+<li>Затем выберите формат файла, в который хотите преобразовать. В данном случае это Word или DOCX.</li>
+<li>Начните преобразование ваших PDF-файлов и в конце сохраните созданные файлы Word на свой компьютер.</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">Могу ли я использовать PDF24 Converter в офлайн режиме?</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<p>Да, просто скачайте бесплатный и простой в использовании PDF24 Creator и установите эту программу. Это программное обеспечение представляет собой автономное решение для работы с PDF, которое также включает PDF Converter, который позволяет конвертировать файлы в PDF и обратно.</p>
+</div>
+</div>
+</div>
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">Безопасно ли использовать инструменты PDF24?</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<p>PDF24 серьезно относится к защите файлов и данных. Мы хотим, чтобы пользователи могли доверять нам. Поэтому мы постоянно работаем над проблемами безопасности.</p>
+<ol>
+<li>Все передачи файлов зашифрованы.</li>
+<li>Все файлы удаляются автоматически из обрабатывающего сервера в течение часа после обработки.</li>
+<li>Мы не храним файлы и не оцениваем их. Файлы используются только по назначению.</li>
+<li>PDF24 принадлежит немецкой компании Geek Software GmbH. Все обрабатывающие серверы находятся в центрах обработки данных на территории ЕС.</li>
+<li>Кроме того, вы можете получить настольную версию инструментов PDF24 вместе с <a href="https://tools.pdf24.org/ru/creator">PDF24 Creator</a>. Все ваши файлы остаются на вашем компьютере, так как эта программа работает офлайн.</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">Могу ли я использовать PDF24 на Mac, Linux или смартфоне?</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<p>Да, вы можете использовать PDF24 Tools в любой системе, в которой у вас есть доступ в Интернет. Откройте PDF24 Tools в веб-браузере, таком как Chrome, и используйте инструменты прямо в веб-браузере. Никакого другого программного обеспечения устанавливать не нужно.</p>
+<p>Вы также можете установить PDF24 в качестве приложения на свой смартфон. Для этого откройте инструменты PDF24 в Chrome на своем смартфоне. Затем щелкните значок «Установить» в правом верхнем углу адресной строки или добавьте PDF24 на начальный экран через меню Chrome.</p>
+</div>
+</div>
+</div>
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">Могу ли я использовать PDF24 в офлайн без подключения к Интернету?</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<p>Да, пользователи Windows также могут использовать PDF24 в офлайн, то есть без подключения к Интернету. Просто скачайте бесплатный PDF24 Creator и установите программное обеспечение. PDF24 Creator переносит все инструменты PDF24 на ваш компьютер в виде настольного приложения. Пользователи других операционных систем должны продолжать использовать PDF24 Tools.</p>
+</div>
+</div>
+</div>
+<div class="mt2">
+<a class="plus" href="https://tools.pdf24.org/ru/contact">Задать новый вопрос</a>
+</div>
+</div>
+</div>
+</div>
+
 <script>
 
 // Только лог
@@ -151,6 +229,7 @@ document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', functi
 });
 
 </script>
+
 
 <script>
 <!-- Как браузер реагирует на перенос файлов в область загрузки -->
