@@ -9,10 +9,15 @@
     <script type="text/javascript" src="{{ url_for('static', filename='FileEncodingSorter/script.js') }}"></script>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='FileEncodingSorter/style.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
 
 </head>
 <body>
+<div class="menu-button">
+    <a href="https://ruslan-dff.pro/">
+        <img src="{{ url_for('static', filename='interface/home_button.png') }}" alt="Menu Button">
+    </a>
+</div>
     <header class="rh8nkv-0 hoywjo">
 <div class="rh8nkv-1 llspIR">
             <h1 class="rh8nkv-2 fHlUjz">File Encoding Sorter</h1>
@@ -62,6 +67,18 @@
         </div>
     </header>
 
+<div class="advanced-options">
+  <h3 onclick="expandMenu()">👉Advanced Options👈</h3>
+  <div class="content">
+    <label for="fix-encoding">Fix incorrect encodings</label>
+    <input type="checkbox" id="fix-encoding" name="fix-encoding">
+    <label for="corrected-files-in-a-separate-folder">Place the corrected files in a separate folder</label>
+    <input type="checkbox" id="corrected-files-in-a-separate-folder" name="corrected-files-in-a-separate-folder" disabled>
+    <label for="file-correction-only">File correction only (no sorting)</label>
+    <input type="checkbox" id="file-correction-only" name="file-correction-only">
+  </div>
+</div>
+
 <div class="flash-messages">
     <!-- Здесь выведем flash-сообщения -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -107,60 +124,66 @@
 </div>
 </div>
 <div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
-<h3 class="question" itemprop="name">Как преобразовать файл PDF в Word?</h3>
+<h3 class="question" itemprop="name">ファイルのソートプロセスはどのように行われますか？</h3>
 <div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
 <div itemprop="text">
 <ol>
-<li>Выберите соответствующий режим вверху этой страницы, чтобы конвертировать файлы PDF в другие форматы. В этом режиме вы можете, например, конвертировать PDF-файлы в Word.</li>
-<li>Затем кликните на поле выбора файла в верхней части страницы и выберите файлы PDF, которые вы хотите преобразовать в Word.</li>
-<li>Затем выберите формат файла, в который хотите преобразовать. В данном случае это Word или DOCX.</li>
-<li>Начните преобразование ваших PDF-файлов и в конце сохраните созданные файлы Word на свой компьютер.</li>
+<li>ファイルはサーバーにアップロードされ、処理待ちの状態になります。</li>
+<li>スクリプトをアクティブ化すると、ファイルはトレーニングされたエンコード検出機を使用して分析および識別されます。</li>
+<li>ファイルが識別されたら、スクリプトはそれらをエンコードに基づいて生成されたフォルダに配置します。</li>
+<li>すべてのファイルがそれぞれのエンコードに対応するフォルダにソートされた後、スクリプトはすべてのフォルダをアーカイブに入れ、ダウンロードリンクを生成します。</li>
 </ol>
 </div>
 </div>
 </div>
 <div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
-<h3 class="question" itemprop="name">Могу ли я использовать PDF24 Converter в офлайн режиме?</h3>
+<h3 class="question" itemprop="name">どの種類のファイルをソートできますか？</h3>
 <div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
 <div itemprop="text">
-<p>Да, просто скачайте бесплатный и простой в использовании PDF24 Creator и установите эту программу. Это программное обеспечение представляет собой автономное решение для работы с PDF, которое также включает PDF Converter, который позволяет конвертировать файлы в PDF и обратно.</p>
+<p>現時点では、.txt形式のテキストファイルのみをサポートしていますが、スクリプトの改良の過程で他の種類のファイルも順次追加される予定です。</p>
 </div>
 </div>
 </div>
 <div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
-<h3 class="question" itemprop="name">Безопасно ли использовать инструменты PDF24?</h3>
+<h3 class="question" itemprop="name">File Encoding Sorterを使用するのは安全ですか？</h3>
 <div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
 <div itemprop="text">
-<p>PDF24 серьезно относится к защите файлов и данных. Мы хотим, чтобы пользователи могли доверять нам. Поэтому мы постоянно работаем над проблемами безопасности.</p>
+<p>ファイルとデータのセキュリティには非常に真剣に取り組んでいます。したがって、セキュリティの問題に常に取り組んでいます。</p>
 <ol>
-<li>Все передачи файлов зашифрованы.</li>
-<li>Все файлы удаляются автоматически из обрабатывающего сервера в течение часа после обработки.</li>
-<li>Мы не храним файлы и не оцениваем их. Файлы используются только по назначению.</li>
-<li>PDF24 принадлежит немецкой компании Geek Software GmbH. Все обрабатывающие серверы находятся в центрах обработки данных на территории ЕС.</li>
-<li>Кроме того, вы можете получить настольную версию инструментов PDF24 вместе с <a href="https://tools.pdf24.org/ru/creator">PDF24 Creator</a>. Все ваши файлы остаются на вашем компьютере, так как эта программа работает офлайн.</li>
+<li>すべてのファイル転送は暗号化されています。</li>
+<li>アップロードされたすべてのファイルは、処理後24時間以内に自動的に処理サーバーから削除されます。</li>
+<li>各ユーザーのためにセッションフォルダが個別に作成されるため、異なるユーザーによってアップロードされたファイルが混在することを防ぎます。</li>
+<li>また、将来的にはこのアプリケーションのデスクトップバージョンをリリースする予定です。このプログラムはオフラインで動作するため、すべてのファイルはコンピュータ上に残ります。</li>
 </ol>
 </div>
 </div>
 </div>
 <div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
-<h3 class="question" itemprop="name">Могу ли я использовать PDF24 на Mac, Linux или смартфоне?</h3>
+<h3 class="question" itemprop="name">ソート以外の機能の追加は計画されていますか？</h3>
 <div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
 <div itemprop="text">
-<p>Да, вы можете использовать PDF24 Tools в любой системе, в которой у вас есть доступ в Интернет. Откройте PDF24 Tools в веб-браузере, таком как Chrome, и используйте инструменты прямо в веб-браузере. Никакого другого программного обеспечения устанавливать не нужно.</p>
-<p>Вы также можете установить PDF24 в качестве приложения на свой смартфон. Для этого откройте инструменты PDF24 в Chrome на своем смартфоне. Затем щелкните значок «Установить» в правом верхнем углу адресной строки или добавьте PDF24 на начальный экран через меню Chrome.</p>
+<p>はい、現在、不正確なエンコードでファイルを修正するための特別な機能を作成中です。これにより、コンテンツが正しく表示されないドキュメントを読むことができるようになります。</p>
 </div>
 </div>
 </div>
 <div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
-<h3 class="question" itemprop="name">Могу ли я использовать PDF24 в офлайн без подключения к Интернету?</h3>
+<h3 class="question" itemprop="name">Mac、Linux、またはスマートフォンでFile Encoding Sorterを使用できますか？</h3>
 <div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
 <div itemprop="text">
-<p>Да, пользователи Windows также могут использовать PDF24 в офлайн, то есть без подключения к Интернету. Просто скачайте бесплатный PDF24 Creator и установите программное обеспечение. PDF24 Creator переносит все инструменты PDF24 на ваш компьютер в виде настольного приложения. Пользователи других операционных систем должны продолжать использовать PDF24 Tools.</p>
+<p>はい、File Encoding Sorterはインターネットにアクセスできるすべてのシステムで使用できます。ChromeなどのWebブラウザを開いて、File Encoding Sorterを使用します。追加のソフトウェアのインストールは必要ありません。</p>
+</div>
+</div>
+</div>
+<div class="qa" itemscope="" itemprop="mainEntity" itemtype="http://schema.org/Question">
+<h3 class="question" itemprop="name">File Encoding Sorterをインターネットに接続せずにオフラインで使用できますか？</h3>
+<div class="answer" itemscope="" itemtype="http://schema.org/Answer" itemprop="acceptedAnswer">
+<div itemprop="text">
+<p>File Encoding Sorterをオフラインで使用するオプションは、将来のデスクトップバージョンで提供される予定です。Webバージョンはインターネットに接続されている場合にのみ動作します。</p>
 </div>
 </div>
 </div>
 <div class="mt2">
-<a class="plus" href="https://tools.pdf24.org/ru/contact">Задать новый вопрос</a>
+<a class="plus" href="https://ruslan-dff.pro/#contact">新しい質問をする</a>
 </div>
 </div>
 </div>
@@ -298,7 +321,6 @@ fileDropArea.addEventListener('drop', function (e) {
 }
 
 <!-- Как браузер реагирует на перенос фвйлов в область загрузки  конец -->
-
 
 
 </script>

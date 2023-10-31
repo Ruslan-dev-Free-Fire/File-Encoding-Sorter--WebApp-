@@ -91,6 +91,109 @@ samuraiYoshinaga.onreadystatechange = function() {
     }
 };
 
+// раскрываемое меню
+function expandMenu() {
+    var menu = document.querySelector('.advanced-options');
+    menu.classList.toggle('expanded');
+  }
+// раскрываемое меню конец
+
+
+// обработка чекбоксов
+function handleAdvancedOptions() {
+    var fixEncodingCheckbox = document.getElementById('fix-encoding');
+    var correctedFilesCheckbox = document.getElementById('corrected-files-in-a-separate-folder');
+    var fileCorrectionOnlyCheckbox = document.getElementById('file-correction-only');
+
+    // Устанавливаем зависимость между чекбоксами
+    var isFixEncodingChecked = fixEncodingCheckbox.checked;
+    correctedFilesCheckbox.disabled = !isFixEncodingChecked;
+    fileCorrectionOnlyCheckbox.disabled = !isFixEncodingChecked;
+
+    // Если fixEncodingCheckbox не выбран, сбрасываем correctedFilesCheckbox и fileCorrectionOnlyCheckbox
+    if (!isFixEncodingChecked) {
+        correctedFilesCheckbox.checked = false;
+        fileCorrectionOnlyCheckbox.checked = false;
+    }
+
+    // Получаем значения чекбоксов
+    var fixEncodingValue = isFixEncodingChecked;
+    var correctedFilesValue = correctedFilesCheckbox.checked;
+    var fileCorrectionOnlyValue = fileCorrectionOnlyCheckbox.checked;
+
+    // Отправляем значения на сервер с помощью fetch API или XMLHttpRequest
+    fetch('/web-app-settings', {
+        method: 'POST',
+        body: JSON.stringify({
+            fixEncoding: fixEncodingValue,
+            correctedFiles: correctedFilesValue,
+            fileCorrectionOnly: fileCorrectionOnlyValue
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.json())
+      .then(data => console.log(data));
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Вызываем handleAdvancedOptions при загрузке страницы
+    handleAdvancedOptions();
+
+    document.getElementById('start-sorting').addEventListener('click', function() {
+        handleAdvancedOptions();
+    });
+
+    document.getElementById('fix-encoding').addEventListener('change', function() {
+        handleAdvancedOptions();
+    });
+});
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('start-sorting').addEventListener('click', function() {
+        handleAdvancedOptions();
+    });
+
+    document.getElementById('fix-encoding').addEventListener('change', function() {
+        handleAdvancedOptions();
+    });
+});
+
+   // кнопка
+function serverLog(message) {
+    // Выводим сообщение в консоль
+    console.log(message);
+
+    // Отправляем сообщение на сервер
+    $.ajax({
+        url: '/log',
+        method: 'POST',
+        data: JSON.stringify({ message: message }),
+        contentType: 'application/json',
+        success: function(response) {
+            console.log('Сообщение успешно отправлено на сервер.');
+        },
+        error: function(error) {
+            console.log('Произошла ошибка при отправке сообщения на сервер:', error);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.getElementById('start-sorting').addEventListener('click', function() {
+        var fixEncodingCheckbox = document.getElementById('fix-encoding');
+        var correctedFilesCheckbox = document.getElementById('corrected-files-in-a-separate-folder');
+        var fileCorrectionOnlyCheckbox = document.getElementById('file-correction-only');
+
+        var message = '--fix_encodings ' + fixEncodingCheckbox.checked +
+                      ' --separate_folder ' + correctedFilesCheckbox.checked +
+                      ' --only_correction ' + fileCorrectionOnlyCheckbox.checked;
+
+        // Используем serverLog для отправки сообщения на сервер
+        serverLog(message);
+    });
+});
+
 
 // прочие функции
 

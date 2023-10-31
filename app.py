@@ -1,20 +1,24 @@
-import time
-import uuid
 import json
-from flask import Flask, render_template, request, redirect, url_for, flash
-from werkzeug.utils import secure_filename
-from flask_sock import Sock
 import os
 import subprocess
-from flask import Flask, request, session
+import time
+import uuid
+import logging
+from flask import Flask, session
+from flask import Flask, request, jsonify
+from flask import render_template, redirect, url_for, flash
+from flask import request
 from flask import send_from_directory
 from flask_mail import Mail, Message
-from flask import request, make_response
-from flask import jsonify
+from flask_sock import Sock
+from werkzeug.utils import secure_filename
+
 #from flask_talisman import Talisman
 
 app = Flask(__name__)
 sock = Sock(app)
+app.logger.setLevel(logging.INFO)
+
 
 #csp = {
 #    'default-src': [
@@ -44,6 +48,29 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Например, 16 MB
 
 
+@app.route('/web-app-settings', methods=['POST'])
+def web_app_settings():
+    # Здесь вы можете обработать данные запроса, например, изменить настройки
+
+    # Возвращаем JSON-ответ
+    return jsonify(message='Your settings have been successfully changed')
+
+
+@app.route('/log', methods=['POST'])
+def log_message():
+    data = request.get_json()
+    message = data.get('message', '')
+    app.logger.info(message)
+
+    # Разбиваем сообщение на части и извлекаем аргументы
+    args = message.split(' ')
+
+    # Запускаем скрипт с аргументами
+    subprocess.run(['python', 'file_sorter.py'] + args)
+
+    return jsonify({'message': 'Message logged successfully.'}), 200
+
+
 @sock.route('/sockjs')
 def sockjs(sock):
     while True:
@@ -70,7 +97,6 @@ def sockjs(sock):
                 sock.send(f'Error during sorting: {e}')
 
 
-
 # Функция для проверки разрешенных расширений файлов
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'txt'
@@ -78,10 +104,6 @@ def allowed_file(filename):
 @app.route('/download/<session_id>')
 def download_file(session_id):
     return send_from_directory('Ready/' + session_id, 'Completed_files.zip')
-
-
-
-
 
 
 # Функция отправки запроса на кнопку для выполнения скрипта сортировки
@@ -101,7 +123,8 @@ def sort_files():
             if not os.listdir(UPLOAD_FOLDER):
                 return jsonify(message='No files to sort')
 
-            subprocess.run(['python', './file_sorter.py'], check=True)
+            # Здесь был вызов subprocess.run(['python', './file_sorter.py'], check=True)
+
             download_link = url_for('download_file', session_id=session_id)
             return jsonify(message='Sorting completed successfully.', session_id=session_id)
         except subprocess.CalledProcessError as e:
@@ -164,9 +187,6 @@ def file_encoding_sorter():
                 flash('Downloaded files not found', 'error')
 
     return render_template('file_encoding_sorter.html')
-
-
-
 
 # My page end
 
