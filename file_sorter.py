@@ -188,8 +188,12 @@ def sort_and_fix_folder(user_folders, encoding_to_folder_map):
                         shutil.move(target_file_path, new_target_file_path)
                         print(f"File '{target_file_path}' moved to '{new_target_file_path}'.")
 
-                        # Вызываем скрипт 'File_fixer.py'
-                        subprocess.check_call(['python', 'File_fixer.py'])
+                        # Создаем процесс с помощью Popen
+                        process = subprocess.Popen(['python', 'File_fixer.py'], stdin=subprocess.PIPE)
+
+                        # Отправляем 'y\n' в стандартный ввод процесса
+                        process.communicate(input=b'y\n')
+
                 except Exception as e:
                     print(f"An error occurred while processing a file: {e}")
 
@@ -285,8 +289,11 @@ def sort_and_not_fix_folder(user_folders, encoding_to_folder_map):
                         shutil.move(target_file_path, new_target_file_path)
                         print(f"File '{target_file_path}' moved to '{new_target_file_path}'.")
 
-                        # Вызываем скрипт 'File_fixer.py'
-                        subprocess.call(['python', 'File_fixer.py'])
+                        # Создаем процесс с помощью Popen
+                        process = subprocess.Popen(['python', 'File_fixer.py'], stdin=subprocess.PIPE)
+
+                        # Отправляем 'y\n' в стандартный ввод процесса
+                        process.communicate(input=b'y\n')
 
                         # После исправления файлов перемещаем их обратно в исходную папку
                         shutil.move(new_target_file_path, target_file_path)
@@ -390,8 +397,11 @@ def no_sort_and_not_fix_folder(user_folders, encoding_to_folder_map):
                         shutil.move(target_file_path, new_target_file_path)
                         print(f"File '{target_file_path}' moved to '{new_target_file_path}'.")
 
-                        # Вызываем скрипт 'File_fixer.py'
-                        subprocess.call(['python', 'File_fixer.py'])
+                        # Создаем процесс с помощью Popen
+                        process = subprocess.Popen(['python', 'File_fixer.py'], stdin=subprocess.PIPE)
+
+                        # Отправляем 'y\n' в стандартный ввод процесса
+                        process.communicate(input=b'y\n')
 
                         # После исправления файлов перемещаем их обратно в исходную папку
                         shutil.move(new_target_file_path, target_file_path)
@@ -443,108 +453,6 @@ def no_sort_and_not_fix_folder(user_folders, encoding_to_folder_map):
                 print(f'Failed to delete {file_path}. Reason: {e}')
 
 
-def no_sort_and_fix_folder(user_folders, encoding_to_folder_map):
-    print("Запуск функции без сортировки и только папка Fix Folder")  # Выводим сообщение в консоль
-
-    # Process files and remove duplicates
-    def check_for_specific_chars(file_path, chars):
-        with open(file_path, 'r', encoding='ISO-8859-1') as f:
-            content = f.read()
-            for char in chars:
-                if char in content:
-                    return True
-        return False
-
-    # Process files and remove duplicates
-    for user_folder_path in user_folders:
-        # Create a unique folder inside the Ready folder for each user
-        user_ready_folder = os.path.join('Ready', os.path.basename(user_folder_path))
-        os.makedirs(user_ready_folder, exist_ok=True)
-
-        txt_files = [file for file in os.listdir(user_folder_path) if file.lower().endswith(".txt")]
-
-        if txt_files:
-            print(f"Number of .txt files in folder '{user_folder_path}': {len(txt_files)}")
-
-            for txt_file in txt_files:
-                file_path = os.path.join(user_folder_path, txt_file)
-                logging.info(f"Processing file: {file_path}")
-                print(f"Processing file: {file_path}")
-
-                try:
-                    # Determine the encoding of the file
-                    detector = UniversalDetector()
-                    with open(file_path, 'rb') as f:
-                        for line in f:
-                            detector.feed(line)
-                            if detector.done:
-                                break
-                    detector.close()
-                    encoding = detector.result['encoding']
-
-                    print(f"Detected encoding for file '{file_path}': {encoding}")
-
-                    target_folder_name = encoding_to_folder_map.get(encoding, 'Unknown')
-
-                    # Create a folder for each encoding inside the user's unique folder
-                    target_folder = os.path.join(user_ready_folder, target_folder_name)
-                    os.makedirs(target_folder, exist_ok=True)
-
-                    target_file_path = os.path.join(target_folder, txt_file)
-                    shutil.copy(file_path, target_file_path)
-                    logging.info(f"File '{file_path}' copied to '{target_file_path}'.")
-                    print(f"File '{file_path}' copied to '{target_file_path}'.")
-
-                    # Check for specific characters and process the file if condition is met
-                    specific_chars = "ѓќѓѓCѓѓѓѓЏЃѓЋЌ†ѓЃѓЃЃyЊЋЉz—ї‹аМІ€Д“аЃz"
-                    if target_folder_name in ["Shift_JIS", "UTF-8", "Windows-1251", "Unknown",
-                                              "Windows-1252"] and check_for_specific_chars(target_file_path,
-                                                                                           specific_chars):
-                        fix_files_folder = os.path.join(user_ready_folder, 'Fix_files')
-                        os.makedirs(fix_files_folder, exist_ok=True)
-
-                        filename_without_extension, extension = os.path.splitext(txt_file)
-                        new_target_file_path = os.path.join(fix_files_folder,
-                                                            filename_without_extension + '_fix' + extension)
-                        shutil.move(target_file_path, new_target_file_path)
-                        print(f"File '{target_file_path}' moved to '{new_target_file_path}'.")
-
-                        # Вызываем скрипт 'File_fixer.py'
-                        subprocess.run(['python', 'File_fixer.py'])
-                except Exception as e:
-                    print(f"An error occurred while calling the script: {e}")
-
-    # Move files from subfolders to the user's unique folder
-    for folder_name in os.listdir(user_ready_folder):
-        folder_path = os.path.join(user_ready_folder, folder_name)
-        if os.path.isdir(folder_path) and not os.listdir(folder_path):
-            os.rmdir(folder_path)
-            print(f"Empty folder '{folder_path}' deleted.")  # Deletion of empty folders
-
-        # Create an archive with processed files in the user's unique folder
-        archive_name = f'Completed_files_{os.path.basename(user_ready_folder)}.zip'
-        with ZipFile(os.path.join(user_ready_folder, archive_name), 'w') as zipf:
-            for root, dirs, files in os.walk(user_ready_folder):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    if not file_path.endswith('.zip'):  # Exclude .zip files
-                        # Add file to archive with relative path
-                        zipf.write(file_path, arcname=os.path.relpath(file_path, user_ready_folder))
-
-        print(f"Archive '{user_ready_folder}/{archive_name}' created successfully.")
-
-        # Delete remaining files in the current session folder
-        for filename in os.listdir(user_ready_folder):
-            file_path = os.path.join(user_ready_folder, filename)
-            try:
-                if os.path.isfile(file_path) and not file_path.endswith('.zip'):  # Delete only non-.zip files
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')  # Deletion of remaining files and folders
-
-
 # Разберите аргументы
 args = parser.parse_args()
 
@@ -558,5 +466,3 @@ if args.fix_encodings and not args.separate_folder and not args.only_correction:
     sort_and_not_fix_folder(user_folders, encoding_to_folder_map)
 if args.fix_encodings and not args.separate_folder and args.only_correction:
     no_sort_and_not_fix_folder(user_folders, encoding_to_folder_map)
-if args.fix_encodings and args.separate_folder and args.only_correction:
-    no_sort_and_fix_folder(user_folders, encoding_to_folder_map)

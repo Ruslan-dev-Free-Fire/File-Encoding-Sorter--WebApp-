@@ -4,7 +4,7 @@ import subprocess
 import time
 import uuid
 import logging
-from flask import Flask, session
+from flask import Flask, session, make_response
 from flask import Flask, request, jsonify
 from flask import render_template, redirect, url_for, flash
 from flask import request
@@ -148,9 +148,13 @@ def initialize_user_folder():
     # Сохраняем 'user_folder' в сессии
     session['user_folder'] = user_folder
 
-# Route for file upload
+    return device_id
+
 @app.route('/file_encoding_sorter', methods=['GET', 'POST'])
 def file_encoding_sorter():
+    # Инициализируем папку пользователя при каждом запросе
+    device_id = initialize_user_folder()
+
     if request.method == 'POST':
         # Проверка, был ли выбран файл
         if 'file' not in request.files:
@@ -173,11 +177,6 @@ def file_encoding_sorter():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
 
-            # Если уникальная папка пользователя не существует, создаем новую
-            if 'user_folder' not in session or not os.path.exists(session['user_folder']):
-                session['user_folder'] = os.path.join("uploads", str(time.time()))
-                os.makedirs(session['user_folder'], exist_ok=True)
-
             try:
                 # Сохраняем файл в уникальной папке пользователя
                 file.save(os.path.join(session['user_folder'], filename))
@@ -186,7 +185,9 @@ def file_encoding_sorter():
             except FileNotFoundError:
                 flash('Downloaded files not found', 'error')
 
-    return render_template('file_encoding_sorter.html')
+    response = make_response(render_template('file_encoding_sorter.html'))
+    response.set_cookie('device_id', device_id)
+    return response
 
 # My page end
 
@@ -226,6 +227,9 @@ def home():
 def thanks():
     return render_template('thanks.html')
 
+@app.route('/My_test')
+def My_test():
+    return render_template('My_test.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

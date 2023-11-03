@@ -34,7 +34,7 @@
                                     <div class="sc-8s01yt-1 vma-Dc">
                                         <form class="sc-16z3mvs-1 GbsEV" method="post" enctype="multipart/form-data" action="{{ url_for('file_encoding_sorter') }}">
     <label class="sc-16z3mvs-2 dAA-dEm">
-        <input type="file" name="file" accept=".txt" class="hidden-input sc-16z3mvs-0 kbLfHX">
+        <input type="file" name="file" accept=".txt" class="hidden-input sc-16z3mvs-0 kbLfHX" multiple>
         <div class="sc-8s01yt-2 fLFedC">
             <div class="sc-8s01yt-4 GrhAj">
                 <div class="sc-2xfn8l-0 bWaBkl sc-1ohxvl7-0 kvbqhA">
@@ -78,6 +78,10 @@
     <input type="checkbox" id="file-correction-only" name="file-correction-only">
   </div>
 </div>
+
+
+
+
 
 <div class="flash-messages">
     <!-- Здесь выведем flash-сообщения -->
@@ -228,28 +232,51 @@ document.querySelector('.sc-16z3mvs-0.kbLfHX').addEventListener('change', functi
 
     // Проверяем, что пользователь выбрал файл
     if (fileInput.files.length > 0) {
-        // Получаем информацию о выбранном файле
-        var file = fileInput.files[0];
-
         // Разрешенные расширения файлов
         var allowedExtensions = ['txt'];
 
-        // Получаем расширение выбранного файла и приводим его к нижнему регистру
-        var fileExtension = file.name.split('.').pop().toLowerCase();
+        // Перебираем все выбранные файлы
+        for (var i = 0; i < fileInput.files.length; i++) {
+            // Получаем информацию о выбранном файле
+            var file = fileInput.files[i];
 
-        // Проверяем, соответствует ли расширение разрешенным
-        if (allowedExtensions.indexOf(fileExtension) === -1) {
-            // Выводим предупреждение, если расширение не разрешено
-            alert('Only files with the extension .txt are allowed');
+            // Получаем расширение выбранного файла и приводим его к нижнему регистру
+            var fileExtension = file.name.split('.').pop().toLowerCase();
 
-            // Очищаем поле ввода файла, чтобы пользователь мог выбрать другой файл
-            fileInput.value = '';
-        } else {
-            // Автоматически отправляем форму, к которой принадлежит файловый ввод
-            fileInput.form.submit();
+            // Проверяем, соответствует ли расширение разрешенным
+            if (allowedExtensions.indexOf(fileExtension) === -1) {
+                // Выводим предупреждение, если расширение не разрешено
+                alert('Only files with the extension .txt are allowed');
+            } else {
+                // Создаем новый объект FormData и добавляем файл
+                var formData = new FormData();
+                formData.append('file', file);
+
+                // Создаем новый объект XMLHttpRequest
+                var xhttp = new XMLHttpRequest();
+
+                // Определяем функцию, которая будет вызвана при изменении состояния запроса
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // Запрос успешно выполнен и ответ получен
+                        console.log(this.responseText);
+
+                        // Обновляем пользовательский интерфейс для отображения сообщения об успешной загрузке
+                        var messageBox = document.getElementById('log'); // замените 'messageBox' на идентификатор элемента, в котором должно отображаться сообщение
+                        if (messageBox) {
+                            messageBox.textContent = 'File uploaded successfully';
+                        }
+                    }
+                };
+
+                // Отправляем POST-запрос на URL /file_encoding_sorter с файлом в качестве данных формы
+                xhttp.open("POST", "/file_encoding_sorter", true);
+                xhttp.send(formData);
+            }
         }
     }
 });
+
 
 </script>
 

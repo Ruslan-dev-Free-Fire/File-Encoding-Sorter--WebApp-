@@ -41,9 +41,75 @@ html {
                 background-color: transparent;
             }
 
-			.mytextlogfile {
+.modal {
+  display: block; /* Измените это на 'block', чтобы сделать модальное окно видимым по умолчанию */
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.button_1698811370734 {
     position: absolute;
-    top: 82%;
+    left: 691px; /* Измените это значение для изменения горизонтального положения кнопки */
+    top: 668px;
+    display: inline-block !important;
+    text-decoration: none !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 4px solid #319f4e !important;
+    border-radius: 54px !important;
+    font-size: 16px !important;
+    padding: 8px 28px !important;
+    transition: all 0.8s ease !important;
+    transform: scale(1.50);
+}
+.button_1698811370734:hover{
+    text-decoration: none !important;
+    background-color: #ffffff !important;
+    color: #086000 !important;
+    border-color: #000000 !important;
+}
+
+.button_1698811370735 {
+    position: absolute;
+    left: 1135px; /* Измените это значение для изменения горизонтального положения кнопки */
+    top: 668px;
+    display: inline-block !important;
+    text-decoration: none !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 4px solid #ff3500 !important;
+    border-radius: 54px !important;
+    font-size: 16px !important;
+    padding: 8px 28px !important;
+    transition: all 0.8s ease !important;
+    transform: scale(1.50);
+}
+
+.button_1698811370735:hover{
+    text-decoration: none !important;
+    background-color: #ffffff !important;
+    color: #d12600 !important;
+    border-color: #000000 !important;
+}
+
+.mytextlogfile {
+    position: absolute;
+    top: 87%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 337px;
@@ -57,26 +123,50 @@ html {
     overflow-y: auto;
 }
 
+/* Настройки для мобильных устройств */
+@media screen and (max-width: 600px) {
+  .mytextlogfile {
+    position: absolute;
+    top: 108%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 337px;
+    height: 146px;
+    background: #888;
+    color: #fff;
+    border: 2px solid #333;
+    border-radius: 5px;
+    padding: 7px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
 .flash-messages-list {
     margin-top: 185px;
     color: white; /* Устанавливаем белый цвет текста */
 }
 
-.flex-display-9f8d3cb2 {
-    display: flex;
-}
-
-.file-input-4d9a2c1f {
-    display: none;
-}
-
-.hidden-div-7e3b6fa0 {
-    display: none;
-}
-
 /* Стиль записей лога */
 .log-entry {
     margin-bottom: 10px;
+}
+
+.advanced-options {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+.advanced-options .content {
+display: none;
+padding: 10px;
+}
+
+.advanced-options.expanded .content {
+font-size: 1.39em;
+display: block;
 }
 
 			.iksweb {
@@ -90,8 +180,8 @@ html {
 				border-radius: 54px;
 				border: 5px solid #beff82;
 				position: absolute;
-				top: 66%;
-				left: 50%;
+				top: 68%;
+                left: 50%;
 				transform: translate(-50%, -50%);
 			}
 
@@ -5225,7 +5315,7 @@ html {
 
             /*!sc*/
             .QrMRD {
-                position: absolute;
+                position: relative;
                 border-radius: 8px;
                 background: rgb(27 141 65);
                 width: 100%;
@@ -5397,7 +5487,6 @@ html {
             /*!sc*/
             .kkceuK {
                 position: relative;
-                left: -3%;
                 display: -webkit-box;
                 display: -webkit-flex;
                 display: -ms-flexbox;
@@ -5480,7 +5569,7 @@ html {
 
             /*!sc*/
             .deyfvp {
-                display: block;
+                display: inline;
                 cursor: pointer;
                 width: 100%;
             }
@@ -5546,8 +5635,7 @@ html {
                 font-size: 16px;
                 line-height: 24px;
                 padding-top: 12px;
-                text-align: left; /* Устанавливаем выравнивание текста влево */
-    margin-left: -51px; /* Добавляем отступ слева (измените значение по вашему желанию) */
+                text-align: center;
                 color: rgba(255,255,255,1);
             }
 
@@ -6679,6 +6767,7 @@ html {
                 }
             };
 
+
 .section.even {
     background-color: #e5f2fc;
     background-color: var(--theme-bg-color,#e5f2fc);
@@ -6754,7 +6843,7 @@ h1, h2, h3 {
 
 h3 {
     display: block;
-    font-size: 1.17em;
+    font-size: 1.69em;
     margin-block-start: 1em;
     margin-block-end: 1em;
     margin-inline-start: 0px;
@@ -7344,6 +7433,7 @@ blockquote {
 	}
 
 	.qas p {
+	    font-size: 1.29em;
 		padding: 0 10px;
 		margin: 8px 0
 	}
@@ -7356,9 +7446,14 @@ blockquote {
 	}
 
 	.qas ol li {
+	    font-size: 1.29em;
 		margin-bottom: 15px;
 		counter-increment: item
 	}
+
+    .plus {
+    font-size: 1.29em;
+    }
 
 	.qas ol li::before {
 		content: counter(item);
@@ -7719,3 +7814,22 @@ blockquote {
 	#questionAnswerSection {
   top: 345px;
     }
+
+        /* Стили для мобильной версии кнопки iksweb */
+        @media (max-width: 768px) {
+            .iksweb {
+                display: inline-block;
+                cursor: pointer;
+                font-size: 35px;
+                text-align: center;
+                text-decoration: none;
+                padding: 10px 21px;
+                color: #000000;
+                background: #65ff96;
+                border-radius: 54px;
+                border: 5px solid #beff82;
+                position: absolute;
+                top: 82%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
