@@ -96,7 +96,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-For support or to report issues, please email `noreply@ruslan-dff.pro`.
+For support or to report issues, please email `info@ruslan-dff.pro`.
 
 ## Acknowledgments
 
