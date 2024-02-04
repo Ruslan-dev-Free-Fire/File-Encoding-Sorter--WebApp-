@@ -101,7 +101,7 @@ def standard_sorting(user_folders, encoding_to_folder_map):
                     print(f"An error occurred while processing a file: {e}")
 
             # Создание архива с обработанными файлами в уникальной папке пользователя
-            archive_name = f'Completed_files_{os.path.basename(user_folder_path)}.zip'
+            archive_name = 'Completed_files.zip'
             with ZipFile(os.path.join(user_ready_folder, archive_name), 'w') as zipf:
                 for encoding_folder in encoding_to_folder_map.values():
                     encoding_folder_path = os.path.join(user_ready_folder, encoding_folder)
@@ -198,7 +198,7 @@ def sort_and_fix_folder(user_folders, encoding_to_folder_map):
                     print(f"An error occurred while processing a file: {e}")
 
         # Create an archive with processed files in the user's unique folder
-        archive_name = f'Completed_files_{os.path.basename(user_ready_folder)}.zip'
+        archive_name = 'Completed_files.zip'
         with ZipFile(os.path.join(user_ready_folder, archive_name), 'w') as zipf:
             for folder_name in os.listdir(user_ready_folder):
                 folder_path = os.path.join(user_ready_folder, folder_name)
@@ -306,7 +306,7 @@ def sort_and_not_fix_folder(user_folders, encoding_to_folder_map):
                     print(f"An error occurred while processing a file: {e}")
 
         # Create an archive with processed files in the user's unique folder
-        archive_name = f'Completed_files_{os.path.basename(user_ready_folder)}.zip'
+        archive_name = 'Completed_files.zip'
         with ZipFile(os.path.join(user_ready_folder, archive_name), 'w') as zipf:
             for folder_name in os.listdir(user_ready_folder):
                 folder_path = os.path.join(user_ready_folder, folder_name)
@@ -431,7 +431,7 @@ def no_sort_and_not_fix_folder(user_folders, encoding_to_folder_map):
                 print(f"Empty folder '{folder_path}' deleted.")
 
         # Create an archive with processed files in the user's unique folder
-        archive_name = f'Completed_files_{os.path.basename(user_ready_folder)}.zip'
+        archive_name = 'Completed_files.zip'
         with ZipFile(os.path.join(user_ready_folder, archive_name), 'w') as zipf:
             for filename in os.listdir(user_ready_folder):
                 file_path = os.path.join(user_ready_folder, filename)
